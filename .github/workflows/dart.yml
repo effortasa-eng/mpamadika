@@ -1,0 +1,33 @@
+
+name: Build Mpamadika APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [principal]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Preparer le projet Android
+        run: |
+          flutter create --platforms=android --org mg.mpamadika --project-name mpamadika .
+          flutter pub get
+
+      - name: Construire APK
+        run: flutter build apk --release
+
+      - name: Publier APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mpamadika-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
